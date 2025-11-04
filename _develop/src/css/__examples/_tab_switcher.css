@@ -1,0 +1,62 @@
+/*
+Pure CSS tab switcher example.
+
+[Important Points]
+1) :has() selector
+2) :nth-child(n of selector)
+
+[pug]
+.tab
+  .tab__head
+    ul.tab__navigation-list
+      li.tab__navigation-list-item
+        label
+          input(type="radio", name="tab", hidden, checked)
+          span TabName#{index}
+      li.tab__navigation-list-item
+        label
+          input(type="radio", name="tab", hidden)
+          span TabName#{index}
+
+  .tab__body
+    each elem, index in new Array(2)
+      .tab__content
+        h1 content#{index+1}
+*/
+
+.tab {
+  width: 800px;
+  margin-inline: auto;
+
+  label {
+    display: block;
+    cursor: pointer;
+  }
+
+  &__navigation-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    &-item {
+      &:has(input:checked) {
+        background-color: #ffcccc;
+      }
+    }
+  }
+
+  &__content {
+    display: none;
+  }
+
+  &:has(:nth-child(1 of .tab__navigation-list-item) input:checked) {
+    :nth-child(1 of .tab__content) {
+      display: block;
+    }
+  }
+
+  &:has(:nth-child(2 of .tab__navigation-list-item) input:checked) {
+    :nth-child(2 of .tab__content) {
+      display: block;
+    }
+  }
+}

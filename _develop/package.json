@@ -1,0 +1,102 @@
+{
+  "name": "frontend-template",
+  "version": "1.0.0",
+  "description": "template",
+  "main": "index.js",
+  "engines": {
+    "node": "^22.13.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://backlog.caters.jp:8969/backlog/git/FRONTEND/FrontEndTemplate-v2.git"
+  },
+  "license": "ISC",
+  "author": "matsumoto",
+  "browserslist": [
+    ">= 0.25%"
+  ],
+  "scripts": {
+    "start": "cross-env NODE_ENV=development run-s create:directory init",
+    "create:directory": "mkdirp \"src/fonts\" && mkdirp \"src/images\" && mkdirp \"src/static_files\"",
+    "init": "run-s clean:* build:js && run-p \"validate:* &\" watch:*",
+    "clean:console": "echo \"\\x1Bc\"",
+    "clean:host": "kill-port 3000",
+    "clean:js": "cross-conf-env rimraf \"$npm_config_dest$npm_config_sub_directory$npm_config_asset_path/js\"",
+    "watch:localhost": "browser-sync start --config bs-config.js",
+    "watch:pug": "cross-conf-env pug3 src/pug --out $npm_config_dest$npm_config_sub_directory --obj \"./npm_scripts/pug_func.js\" --watch --pretty",
+    "build:pug": "cross-conf-env pug3 src/pug --out $npm_config_dest$npm_config_sub_directory --obj \"./npm_scripts/pug_func.js\" --pretty",
+    "validate:html": "node \"npm_scripts/validate_html\"",
+    "watch:css": "cross-conf-env postcss \"src/css/**/!(_)*.css\" -d \"$npm_config_dest$npm_config_sub_directory$npm_config_asset_path/css\" -c \"./postcss.config.js\" --env=production --ext css -w",
+    "build:css": "cross-conf-env postcss \"src/css/**/!(_)*.css\" -d \"$npm_config_dest$npm_config_sub_directory$npm_config_asset_path/css\" -c \"./postcss.config.js\" --env=production --ext css",
+    "watch:image": "node \"npm_scripts/watch_image\"",
+    "build:image": "node \"npm_scripts/build_image\"",
+    "watch:file": "node \"npm_scripts/watch_static_file\"",
+    "build:file": "node \"npm_scripts/cpx_file\"",
+    "build:html": "node \"npm_scripts/cache_busting.mjs\"",
+    "build:icon": "node \"npm_scripts/svgfont.mjs\"",
+    "watch:js": "cross-conf-env chokidar \"./src/js/**/*\" -c \"node npm_scripts/build.mjs\"",
+    "watch:ts": "cross-conf-env chokidar \"./src/js/**/*.ts\" -c \"tsc --noEmit --skipLibCheck\"",
+    "build:js": "node \"npm_scripts/build.mjs\"",
+    "build": "run-s clean:console clean:js build:pug build:js build:html",
+    "build:all": "run-s clean:js build:file build:image build:pug build:js build:css build:html"
+  },
+  "tempScripts": {
+    "clean:cache": "rimraf \"./node_modules/.cache/\"",
+    "watch:icon": "chokidar \"src/fonts/**/*.svg\" -c \"npm run build:icon\""
+  },
+  "dependencies": {
+    "@anduh/pug-cli": "^1.0.0-alpha8",
+    "autoprefixer": "^10.4.21",
+    "browser-sync": "^3.0.4",
+    "chokidar": "^4.0.3",
+    "chokidar-cli": "^3.0.0",
+    "connect-history-api-fallback": "^2.0.0",
+    "connect-ssi": "^1.1.1",
+    "cpx": "^1.5.0",
+    "cross-conf-env": "^1.3.0",
+    "cross-env": "^7.0.3",
+    "esbuild": "^0.25.4",
+    "eslint": "^9.26.0",
+    "fs": "^0.0.2",
+    "gsap": "^3.13.0",
+    "html-validate": "^9.5.3",
+    "htmlparser2": "^10.0.0",
+    "image-size": "^2.0.2",
+    "kill-port": "^2.0.1",
+    "lenis": "^1.3.3",
+    "mkdirp": "^3.0.1",
+    "node-fetch": "^3.3.2",
+    "npm-run-all": "^4.1.5",
+    "path": "^0.12.7",
+    "postcss": "^8.5.3",
+    "postcss-cachebuster": "^0.1.6",
+    "postcss-cli": "^11.0.1",
+    "postcss-csso": "^6.0.1",
+    "postcss-custom-media": "^11.0.5",
+    "postcss-functions": "^4.0.2",
+    "postcss-import": "^16.1.0",
+    "postcss-momentum-scrolling": "^3.14.22",
+    "postcss-nested": "^7.0.2",
+    "postcss-progress": "^1.1.1",
+    "postcss-reporter": "^7.1.0",
+    "postcss-will-change-transition": "^1.2.0",
+    "prettier": "^3.5.3",
+    "pug": "^3.0.3",
+    "rimraf": "^6.0.1",
+    "sharp": "^0.34.1",
+    "stylelint": "^16.19.1",
+    "svgtofont": "^6.3.2",
+    "three": "^0.180.0",
+    "typescript": "^5.8.3",
+    "url": "^0.11.4"
+  },
+  "devDependencies": {
+    "@types/greensock": "^1.15.32",
+    "@types/node": "^22.15.18",
+    "@types/three": "^0.180.0"
+  },
+  "volta": {
+    "node": "22.14.0",
+    "npm": "11.1.0"
+  }
+}

@@ -1,0 +1,21 @@
+extends ../utils/_base.pug
+
+block append stylesheet
+  //- assetPathで自動でサブディレクトリ対応の/assets/のパスが出るようにしてあります。
+  link(rel="stylesheet", href=assetPath + 'css/cover_flow.css')
+
+block subTitle
+  - var pageTitle = 'Cover Flow'
+
+
+//- ルートだけは配列不要。base.pugの const url使うので。
+block ld
+  +breadcrumbList([])
+
+
+block main
+  .contentInner#content
+    +heading-page('Cover Flow', 'Three.jsで作るカバーフローカルーセル')
+    .canvasWrapper#canvasWrapper
+      #rangeSliderContainer 
+        input(type="range" id="rangeSlider" min="0" max="1" step="0.01")

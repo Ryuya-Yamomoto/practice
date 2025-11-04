@@ -1,0 +1,135 @@
+//- 相対にしたい時はisRelativeをtrue =================================================================== */
+-
+  const isRelative = process.env.npm_config_is_relative;
+  let relativePrefix = '';
+  if (isRelative) {
+    const relativePath = nodePath.relative('src/pug/', filename);
+    const pathLevels = relativePath.split(nodePath.sep).length - 1;
+    relativePrefix = pathLevels === 0 ? './' : new Array(pathLevels).fill('../').join('');
+  }
+
+//- 基本設定 =================================================================== */
+-
+  const subDirectory = process.env.npm_config_sub_directory;
+  const basePath = isRelative ? relativePrefix : `/${ subDirectory }`;
+  var assetPath = `${ basePath }${ process.env.npm_config_asset_path }/`;
+
+
+
+
+-
+  const ErrorCheck = () => {
+    const errorMsg = (msg) => {
+      console.log('\033[41m【HTML ERROR】\033[0m \033[33m'+ msg +'\033[0m');
+    }
+    if (!title.length) errorMsg('タイトルが入っていないです。');
+    if (!description.length) errorMsg('Descriptionが入っていないです。');
+    if (!hasAnalysis) errorMsg('アクセス解析を確認の上base.pug参照。');
+
+    const absoluteURLPattern = /^(https?:\/\/)([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i;
+
+    if (!absoluteURLPattern.test(url)) {
+      errorMsg('警告: urlは有効な絶対パス形式であるべきです。現在の値: ' + url);
+      errorMsg('Warning: url should be in absolute path format. Current value: ' + url);
+    }
+
+    if (!absoluteURLPattern.test(ogImageURL)) {
+      errorMsg('警告: ogImageURLは有効な絶対パス形式であるべきです。現在の値: ' + ogImageURL);
+      errorMsg('Warning: ogImageURL should be in absolute path format. Current value: ' + ogImageURL);
+    }
+  }
+
+
+
+//- 構造化データ =================================================================== */
+mixin breadcrumbList(items)
+  - const baseUrl = url.replace(/\/+$/, '');
+  - const validItems = Array.isArray(items) ? [{ url: '/', name: 'TOP' }].concat(items) : [{ url: '/', name: 'TOP' }]
+  if validItems.length
+    script(type='application/ld+json')
+      | {
+      |   "@context": "https://schema.org/",
+      |   "@type": "BreadcrumbList",
+      |   "itemListElement": [
+      |
+      each item, index in validItems
+        - const isAbsolute = item.url && item.url.startsWith('http')
+        - const path = item.url ? item.url.replace(/^\/+/, '') : ''
+        - const fullUrl = isAbsolute ? item.url : `${baseUrl}/${path}`
+        |     {
+        |       "@type": "ListItem",
+        |       "position": #{index + 1},
+        |       "item": {
+        |         "@id": "#{fullUrl}",
+        |         "name": "#{item.name || 'Untitled'}"
+        |       }
+        |     }#{index < validItems.length - 1 ? ',' : ''}
+      | 
+      |   ]
+      | }
+
+
+//- image =================================================================== */
+
+
+//-  pictureタグ
+//-  imagesからでいいです。例) +pic('images/utils/logo.png', 'images/utils/logo_sp.png', 'alt');
+
+-
+  const getWepPPath = (src) => {
+    return src.replace('images/', 'images_min/').replace(/\.jpg$|\.jpeg$|\.png$/g, '.webp')
+  }
+
+mixin pic(pc, sp, alt='')
+  -
+    const dimensionsPc = getImageDimension(pc);
+    const dimensionsSp = getImageDimension(sp);
+    const ratioPC = 768;
+
+  picture
+    if process.env.npm_config_enable_webp && pc.match(/\.jpg$|\.jpeg$|\.png$/g)
+      if (dimensionsPc)
+        source(srcset=assetPath + getWepPPath(pc), media=`(min-width:${ ratioPC }px)`, type='image/webp', width=dimensionsPc.width, height=dimensionsPc.height)
+      else
+        source(srcset=assetPath + getWepPPath(pc), media=`(min-width:${ ratioPC }px)`, type='image/webp')
+    else
+      if (dimensionsPc)
+        source(srcset=assetPath + pc, media=`(min-width:${ ratioPC }px)`, width=dimensionsPc.width, height=dimensionsPc.height)
+      else
+        source(srcset=assetPath + pc, media=`(min-width:${ ratioPC }px)`)
+
+    if process.env.npm_config_enable_webp && sp.match(/\.jpg$|\.jpeg$|\.png$/g)
+      != '\n          '
+      if (dimensionsSp)
+        img(src=assetPath + getWepPPath(sp), alt=alt, class=attributes.class, width=dimensionsSp.width, height=dimensionsSp.height)
+      else
+        img(src=assetPath + getWepPPath(sp), alt=alt, class=attributes.class)
+    else
+      != '\n          '
+      if (dimensionsSp)
+        img(src=assetPath + sp, alt=alt, class=attributes.class, width=dimensionsSp.width, height=dimensionsSp.height)
+      else
+        img(src=assetPath + sp, alt=alt, class=attributes.class)
+
+
+//-  width / height自動入力版画像タグ<img>。
+//-  imagesからでいいです。例) +img('images/utils/logo.png', 'alt');
+mixin img(src, alt='')
+  -
+    const dimensions = getImageDimension(src);
+  if process.env.npm_config_enable_webp && src.match(/\.jpg$|\.jpeg$|\.png$/g)
+    if dimensions
+      img(src=assetPath + getWepPPath(src), alt=alt, width=dimensions.width, height=dimensions.height, loading="lazy", decoding="async", class=attributes.class)
+    else
+      img(src=assetPath + getWepPPath(src), alt=alt, loading="lazy", decoding="async")
+  else
+    if dimensions
+      img(src=assetPath + src, alt=alt, width=dimensions.width, height=dimensions.height, loading="lazy", decoding="async", class=attributes.class)
+    else
+      img(src=assetPath + src, alt=alt, loading="lazy", decoding="async", class=attributes.class)
+
+
+mixin heading-page(title, desc)
+  hgroup.heading-page
+    h2.title!= title
+    p.desc!= desc

@@ -1,0 +1,20 @@
+@font-face {
+  font-family: "glyphs";
+  src: url('../fonts/glyphs.eot?t=1694066494668'); /* IE9*/
+  src: url('../fonts/glyphs.eot?t=1694066494668#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url("../fonts/glyphs.woff2?t=1694066494668") format("woff2"),
+  url("../fonts/glyphs.woff?t=1694066494668") format("woff"),
+  url('../fonts/glyphs.ttf?t=1694066494668') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('../fonts/glyphs.svg?t=1694066494668#glyphs') format('svg'); /* iOS 4.1- */
+}
+
+[class^="glyphs-"], [class*=" glyphs-"] {
+  font-family: 'glyphs' !important;font-size: 1em;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+.glyphs-test:before { content: "\ea01"; }
+

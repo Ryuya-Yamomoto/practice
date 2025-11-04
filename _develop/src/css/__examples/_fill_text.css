@@ -1,0 +1,55 @@
+/*
+It is a common expression.
+Used with intersect-elem.ts
+
+[pug]
+span.fill__text.intersect-elem
+  span.fill__text-content TextTextTextText...
+*/
+
+@keyframes maskBefore {
+  0% {
+    transform: translateX(-100%) translateY(0%);
+  }
+  50% {
+    transform: translateX(0%) translateY(0%);
+  }
+  100% {
+    transform: translateX(100%) translateY(0%);
+  }
+}
+
+.fill__text {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+
+  &-content {
+    display: inline-block;
+    mask-image: linear-gradient(to left, #ffffff, 100%, #ffffff 100%);
+    mask-size: 0 100%;
+    mask-repeat: no-repeat;
+    transition: mask-size 0.3s ease;
+  }
+
+  &:before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%) translateY(0%);
+  }
+  &.active {
+    &:before {
+      animation: maskBefore 0.6s ease both;
+    }
+    .fill__text-content {
+      mask-size: 100% 100%;
+      transition-delay: 0.3s;
+    }
+  }
+}

@@ -1,0 +1,205 @@
+/*
+Basically, Safari 15.3 can be considered out of the recommended list due to the decrease in the share rate,
+but if it is absolutely necessary for your project,
+consider using polyfill separately for :has and @layer, etc.
+*/
+
+/* =================================================================== */
+/*
+Native implementation now makes more sense, so anchorLink.js has been deprecated.
+If you have a fixed header, please use the following CSS.
+https://caniuse.com/?search=scroll-margin-block
+*/
+
+html {
+  scroll-behavior: smooth;
+}
+
+:target {
+  scroll-margin-block: [[fixed-header-height here]] px;
+}
+
+/* =================================================================== */
+/*
+It is useful to create icons in black and change the color with filters.
+https://isotropic.co/tool/hex-color-to-css-filter/
+*/
+
+/* =================================================================== */
+/*
+  :nth-child(An+B [of S]?)
+  nth-child of S syntax
+  https://developer.chrome.com/docs/css-ui/css-nth-child-of-s
+*/
+:nth-child(1 of .elem) {
+}
+:nth-child(1 of div) {
+}
+
+/* Disable double tap zooming on mobile */
+html {
+  touch-action: manipulation;
+}
+
+/* Disable scroll-bounce effect on mobile */
+:root {
+  overscroll-behavior: none;
+}
+
+/* Use Budou to improve Japanese line breaks(^Chrome190) */
+.any {
+  word-break: auto-phrase;
+}
+
+/* Automatically adjust the width of the block element to the content　 */
+.elem {
+  width: fit-content;
+  margin-inline: auto;
+}
+
+/*
+Structurally disable the wrapper. 
+Useful for crossing blocks when responsive.
+*/
+.any {
+  display: contents;
+}
+
+/*
+centering(grid) like:
+  display: flex;
+  align-items: center;
+  justify-content: center;
+*/
+.any {
+  display: grid;
+  place-items: center;
+}
+
+/*
+position: sticky with overflow-hidden.
+https://developer.mozilla.org/en-US/docs/Web/CSS/contain
+*/
+.wapper {
+  contain: paint;
+  .sticky {
+    position: sticky;
+    top: 0;
+  }
+}
+
+/* Maintain inline-background padding */
+span {
+  padding: 2px 10px;
+  line-height: 2;
+  background: #ff0000;
+  color: #fff;
+  box-decoration-break: clone; /* this */
+}
+
+/*
+justify-text like:
+| 会社名 |
+| 住　所 |
+*/
+th {
+  text-align-last: justify;
+}
+
+/*
+Bold marker underline like:
+linear-gradient(to bottom, transparent 50%, #ffaaaa 50%)
+*/
+span {
+  text-decoration: underline;
+  text-decoration-thickness: 0.5em;
+  text-decoration-color: #ffaaaa;
+  text-underline-offset: -0.2em;
+  text-decoration-skip-ink: none;
+}
+
+/*
+Spread child elements to 100%.
+On the desktop, using vh-controller.ts and customProperty together works well.
+*/
+.parent {
+  width: 1024px;
+  margin-inline: auto;
+}
+.child {
+  margin-right: calc(50% - 50vw);
+  margin-left: calc(50% - 50vw);
+}
+.child-vh-controller-ver {
+  margin-right: calc(50% - calc(var(--vw) * 50));
+  margin-left: calc(50% - calc(var(--vw) * 50));
+}
+
+/*
+Translucent cover by border-image.
+
+[pug]
+.elem
+  img(src="https://p-hold.com/200/300", alt="")
+*/
+.elem {
+  display: grid;
+  width: 400px;
+  height: 600px;
+  border-image: linear-gradient(rgba(0, 0, 0, 0), #000) fill 0;
+  position: relative;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+}
+
+/*
+Triangles
+
+Traditionally, triangles have often been represented by borders.
+From now on, use clip-path, whose size is intuitive.
+*/
+.elem {
+  width: 30px;
+  height: 30px;
+  background: #000;
+
+  clip-path: polygon(0 0, 100% 50%, 0% 100%); /* ▶ right  */
+  clip-path: polygon(100% 0, 0% 50%, 100% 100%); /* ◀ left */
+  clip-path: polygon(0% 100%, 50% 0%, 100% 100%); /* ▲ up */
+  clip-path: polygon(0 0, 50% 100%, 100% 0); /* ▼ down */
+}
+
+/*
+  leading-trim
+  https://www.tak-dcxi.com/article/use-line-height-trim-as-css-variable/
+*/
+:root {
+  --leading-trim: calc((1em - 1lh) / 2);
+}
+
+@supports not (top: 1lh) {
+  :root {
+    --leading-trim: 0px;
+  }
+}
+
+p {
+  margin-block: var(--leading-trim);
+
+  /*
+    e.g.
+    margin-block-start: calc(30px + var(--leading-trim));
+    margin-block-end: calc(30px + var(--leading-trim));
+   */
+}
+
+/*
+  CSS Chevron ">"
+  https://css-shape.com/chevron/
+
+  You may want to change the value in Chrome DeveloperTools until the ideal shape is achieved.
+*/

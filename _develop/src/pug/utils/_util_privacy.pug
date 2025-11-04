@@ -1,0 +1,99 @@
+//- e.g.
+  include ./utils/_util_privacy.pug
+  +privacy('【企業名が入ります】', '【サイト名が入ります】')
+
+
+mixin privacy(corpName='【企業名が入ります】', siteName='【サイト名が入ります】')
+  -
+    if (corpName === '【企業名が入ります】' || siteName==='【サイト名が入ります】') {
+      errorMsg('Pug: Privacy : 案件毎の企業名とサイト名入れるの忘れずに');
+    }
+  section
+    h3 基本的考え方
+    p
+      | #{corpName}（以下「当社」という）では、#{siteName}（以下「当サイト」という）において提供するサービス（各種情報提供、ご意見の受付等）の円滑な運営に必要な範囲で、当サイトを利用される皆様の情報を収集しています。収集した情報は利用目的の範囲内で適切に取り扱います。
+
+  section
+    h3 収集する情報の範囲及び利用目的
+    p
+      | 当サイトでは、インターネットドメイン名、IPアドレス、その他当サイトの閲覧等の情報を自動的に収集します。また、当サイトの提供するページには、クッキーを使用して利用者の情報を収集しています。ただし、クッキー（サーバ側で利用者を識別するために、サイトのサーバと利用者のブラウザとの間でやり取りされ、利用者のコンピュータやスマートフォン、タブレットなどに蓄積される情報）を使用して利用者個人を識別できる情報は一切収集していません。
+
+  section
+    h3 Cookie（クッキー）の利用について
+    p
+      | 当サイトではCookieを利用しています。当サイトを利用することにより、利用者の皆様はCookieの利用に同意したことになります。
+      br
+      | Cookieとは、利用者のアクセス情報を一定期間保存し、再度アクセスしたときに利用するためのファイルのことです。Cookieファイルにより、利用者のホームページでの行動が記憶され、サイト再訪問の際などに情報を再入力する必要がなくなります。
+      br
+      | サイトを利用すると、利用者のウェブブラウザに複数のCookieファイルが作成される可能性があります。これらのCookieを利用することにより、当サイトではサイトの利用状況を分析することが可能となります。
+      br
+      | なお、Cookieを利用した場合でも、利用者の皆様の氏名、電子メールアドレス、その他利用者のコンピューターに関する情報を特定することはできません。
+      br
+      | また、当サイトでは、Cookie情報をデータ管理者および指定の第三者と共有する可能性があります。
+
+  section
+    h3 Cookieを無効にする場合
+    p
+      | Cookieはブラウザの設定により無効にすることが可能です。ただし、ブラウザ内の既存のCookieは削除されないため、利用者の皆様ご自身のブラウザ内で削除を行う必要があります。削除方法については、以下のウェブブラウザのヘルプページをご覧ください。Cookieを削除した場合、またはCookieの受信を拒否した場合、一部ページの正確な表示ができない場合などがありますのでご注意ください。
+      br
+      a.link__alpha(href="https://support.google.com/accounts/answer/32050", target="_blank", rel="noopener") Chromeをご利用の場合
+      br
+      a.link__alpha(href="https://support.microsoft.com/ja-jp/microsoft-edge/microsoft-edge-%E3%81%A7-cookie-%E3%82%92%E5%89%8A%E9%99%A4%E3%81%99%E3%82%8B-63947406-40ac-c3b8-57b9-2a946a29ae09", target="_blank", rel="noopener") Microsoft Edgeをご利用の場合
+      br
+      a.link__alpha(href="https://support.mozilla.org/ja/kb/clear-cookies-and-site-data-firefox", target="_blank", rel="noopener") Firefoxをご利用の場合
+      br
+      a.link__alpha(href="https://support.apple.com/ja-jp/HT201265", target="_blank", rel="noopener") Safariをご利用の場合
+      br
+      | 他のウェブブラウザについては、各ウェブブラウザの公式ホームページをご覧ください。
+
+  section
+    h3 GoogleAnalyticsの利用について
+    p
+      | 当サイトでは、利用状況を把握するためにGoogleAnalyticsを利用しています。GoogleAnalyticsは、Cookieを利用して利用者の情報を収集します。詳細については、以下のGoogle社の関連サイトをご覧ください。
+      br
+      a.link__alpha(href="https://developers.google.com/analytics/", target="_blank", rel="noopener") GoogleAnalytics
+      br
+      a.link__alpha(href="https://marketingplatform.google.com/about/analytics/terms/jp/", target="_blank", rel="noopener") GoogleAnalytics利用規約
+      br
+      a.link__alpha(href="https://policies.google.com/technologies/partner-sites?hl=ja", target="_blank", rel="noopener") Googleのサービスを使用するサイトやアプリから収集した情報のGoogleによる使用
+
+  section
+    h3 利用及び提供の制限
+    p
+      | 当社では、法令に基づく開示要請があった場合、不正アクセス等の違法行為があった場合その他特別の理由がある場合を除き、収集した情報を利用目的以外のために自ら利用し、又は第三者に提供しません。
+      br
+      | ただし、統計的に処理を施した当サイトのアクセス情報、利用者属性等の情報については公表する場合があります。
+      br
+      | 個人情報を利用する場合、個人情報保護の重要性に留意するとともに、当該個人情報の利用目的の範囲内でこれを取り扱います。また、当社が保有する個人情報の全部または一部について、第三者に処理等を委託する場合、適正な管理を行うよう必要な監督等に務めます。
+
+  section
+    h3 安全確保の措置
+    p
+      | 当社は、収集した情報を適切に管理し、漏えい、滅失又はき損のないよう、必要な措置を講じます。
+
+
+  section
+    h3 適用範囲
+    p
+      | 本プライバシーポリシーは、当サイトにおいてのみ適用されます。他の機関のホームページにおける情報の取扱いについては、当該機関の方針等が適用され、それぞれの組織の責任において行われます。
+
+  section
+    h3 留意事項
+    p
+      | 一部のソーシャルネットワーキングサービス（SNS）は、ソーシャルメディアのボタン等が設置されているページを閲覧した際、当該ボタン等を押さなくても、ソーシャルメディアを運営する事業者に対し、閲覧者に関する情報が自動で送信されることがあります。詳しくは「SNSの利用者のみなさまへの留意事項」（個人情報保護委員会ホームページ）をご覧ください。
+      br
+      a.link__alpha(href="https://www.ppc.go.jp/news/careful_information/sns_button_life/", target="_blank", rel="noopener") SNSの利用者のみなさまへの留意事項（個人情報保護委員会ウェブサイト）
+      br
+      | なお、送信される情報の範囲等、詳細につきましては、当サイトで利用しているソーシャルメディアのサービスのプライバシーポリシー等を、各事業者のサイト等でご確認ください。
+      br
+      a.link__alpha(href="https://x.com/ja/privacy", target="_blank", rel="noopener") Xプライバシーポリシー（X社ウェブサイト）
+      br
+      a.link__alpha(href="https://ja-jp.facebook.com/policy.php", target="_blank", rel="noopener") データに関するポリシー（Facebook社ウェブサイト）
+      br
+      a.link__alpha(href="https://policies.google.com/privacy?hl=ja", target="_blank", rel="noopener") プライバシーポリシー（Google社ウェブサイト）
+      
+
+  section
+    h3 その他
+    p
+      | 当社では、本プライバシーポリシーを必要に応じて改定する場合があります。

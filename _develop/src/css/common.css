@@ -1,0 +1,193 @@
+@charset "utf-8";
+
+/* Cascade Layer definition */
+@layer common, page, override;
+
+@import './_config/_variables.css';
+@import './_config/_media.css';
+
+/* Only in common.css */
+@import './_config/_reset.css' layer(common);
+@import './_modules/_hover.css' layer(common);
+@import './_modules/_common_override.css' layer(override);
+
+/*
+  A single file can now support tablets.
+  The contents of @media (--pc) {} are automatically converted.
+  (Of course, you can import _pc.css and _sp.css as before.)
+
+  1) set MediaQuery (--tb) on ./_config/_media.css
+  2) isAutoTablet = true on ../../postcss.config.js 
+*/
+@layer common {
+  body {
+    font-family: var(--font_NotoSansJP);
+    font-size: rem(16);
+    line-height: 1.5;
+    letter-spacing: 0.08em;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    line-break: strict;
+  }
+  .root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    main {
+      flex: 1;
+    }
+  }
+
+  @media (--pc) {
+    .root {
+      padding-top: 200px;
+    }
+    .header {
+      background: rgb(255, 255, 255, 0.5);
+      backdrop-filter: blur(4px);
+      border-bottom: 2px solid var(--col_black);
+      height: 80px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      &__inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+        padding-inline: 32px;
+        width: 100%;
+        .logo {
+          a {
+            display: block;
+            width: 160px;
+          }
+        }
+      }
+    }
+    .footer {
+      border-top: 2px solid var(--col_black);
+      margin-top: 80px;
+      width: 100%;
+      &__inner {
+        display: grid;
+        place-items: center;
+        padding-block: 10px;
+        padding-inline: 20px;
+        small {
+          font-size: rem(14);
+          font-weight: 700;
+        }
+      }
+    }
+
+    .contentInner {
+      margin-inline: auto;
+      width: 1200px;
+    }
+
+    .heading-page {
+      display: grid;
+      row-gap: 8px;
+      padding-bottom: 40px;
+      margin-bottom: 40px;
+      position: relative;
+      &:before {
+        background: var(--col_black);
+        content: '';
+        height: 2px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+      }
+      .title {
+        font-family: var(--font_Inter);
+        font-size: rem(48);
+        font-weight: 700;
+      }
+      .desc {
+        font-size: rem(18);
+        font-weight: 500;
+      }
+    }
+  }
+  @media (--sp) {
+    .root {
+      padding-top: vw(200);
+    }
+    .header {
+      background: rgb(255, 255, 255, 0.5);
+      backdrop-filter: blur(vw(4));
+      border-bottom: 2px solid var(--col_black);
+      height: vw(80);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      &__inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+        padding-inline: vw(32);
+        width: 100%;
+        .logo {
+          a {
+            display: block;
+            width: vw(160);
+          }
+        }
+      }
+    }
+    .footer {
+      border-top: 2px solid var(--col_black);
+      margin-top: vw(80);
+      width: 100%;
+      &__inner {
+        display: grid;
+        place-items: center;
+        padding-block: vw(10);
+        padding-inline: vw(20);
+        small {
+          font-size: vw(22);
+          font-weight: 700;
+        }
+      }
+    }
+
+    .contentInner {
+      padding-inline: vw(20);
+      width: 100%;
+    }
+
+    .heading-page {
+      display: grid;
+      row-gap: 8px;
+      padding-bottom: vw(40);
+      margin-bottom: vw(40);
+      position: relative;
+      &:before {
+        background: var(--col_black);
+        content: '';
+        height: 2px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: vw(60);
+      }
+      .title {
+        font-family: var(--font_Inter);
+        font-size: vw(56);
+        font-weight: 700;
+      }
+      .desc {
+        font-size: vw(28);
+        font-weight: 500;
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+extends ./utils/_base.pug
+
+block append stylesheet
+  //- assetPathで自動でサブディレクトリ対応の/assets/のパスが出るようにしてあります。
+  link(rel="stylesheet", href=assetPath + 'css/index.css')
+
+
+//- ルートだけは配列不要。base.pugの const url使うので。
+block ld
+  +breadcrumbList([])
+
+
+block main
+
+  -
+    const thumbList = [
+      {
+        title: 'カバーフローカルーセル Three.js',
+        thumb: 'images/top/cover_flow.jpg',
+        link: '/cover_flow/',
+      }
+    ]
+
+  .contentInner
+    ul.thumbList
+      each item in thumbList
+        li.thumbList__item
+          a(href=item.link).thumbList__item--anchor
+            figure.thumbList__item--img
+              +img(item.thumb, item.title)
+            p.thumbList__item--desc!= item.title

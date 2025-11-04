@@ -1,0 +1,9 @@
+@custom-media --sp (max-width: 767px);
+@custom-media --tb (min-width: 768px) and (max-width: 1400px);
+@custom-media --pc (min-width: 1401px);
+
+/*
+2つだけの時
+@custom-media --pc (min-width: 768px), print;
+@custom-media --sp only screen and (max-width: 767px);
+*/

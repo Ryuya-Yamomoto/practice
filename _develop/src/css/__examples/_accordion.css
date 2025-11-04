@@ -1,0 +1,36 @@
+/*
+Pure css accordion.
+
+[Important Points]
+1) :has() selector.
+2) grid-template-rows-animation.
+
+[pug]
+.accordion
+  label.accordion__trigger
+    input(type="checkbox", hidden)
+    | trigger
+  .accordion__target
+    .accordion__inner
+      | contents
+*/
+
+.accordion {
+  &__inner {
+    overflow: hidden;
+  }
+
+  &__target {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: 0.3s grid-template-rows ease;
+  }
+
+  &__trigger {
+    &:has(input[type='checkbox']:checked) {
+      ~ .accordion__target {
+        grid-template-rows: 1fr;
+      }
+    }
+  }
+}

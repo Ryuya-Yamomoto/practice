@@ -1,0 +1,68 @@
+@media (--pc) {
+  #rangeSlider {
+    width: 80%;
+  }
+
+  .canvasWrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  #rangeSliderContainer {
+    position: absolute;
+    z-index: 2;
+    bottom: 48px;
+    width: 100%;
+    text-align: center;
+  }
+
+  input[type='range'] {
+    appearance: none;
+    border-radius: 10px;
+
+    &::-webkit-slider-container {
+      background: #000;
+    }
+
+    &::-webkit-slider-runnable-track {
+      width: 30%;
+      height: 12px;
+      background: #000;
+      border-radius: 10px;
+      border: 1px solid #777;
+    }
+
+    &::-webkit-slider-thumb {
+      appearance: none;
+      height: 10px;
+      width: 30%;
+      border-radius: 10px;
+      border: 1px #000 solid;
+      background: #777;
+    }
+
+    &:focus {
+      outline: rgba(255, 255, 255, 0.2) solid 2px;
+
+      &::-webkit-slider-runnable-track {
+        background: #222;
+      }
+    }
+  }
+
+  .touch input[type='range'] {
+    &::-webkit-slider-runnable-track {
+      height: 32px;
+      border-radius: 32px;
+    }
+
+    &::-webkit-slider-thumb {
+      height: 30px;
+      border-radius: 30px;
+    }
+  }
+
+  canvas {
+    background: #000000;
+  }
+}
