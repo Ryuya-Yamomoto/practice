@@ -17,6 +17,7 @@ export default class Card extends THREE.Object3D {
     // 上面
     const material = new THREE.MeshLambertMaterial({
       map: texture,
+      side: THREE.DoubleSide,
     });
     const planeTop = new THREE.Mesh(new THREE.PlaneGeometry(cardSize, cardSize), material);
     (this as THREE.Object3D).add(planeTop);
