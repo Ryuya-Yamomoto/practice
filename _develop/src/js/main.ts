@@ -24,11 +24,11 @@ const getComponent = async () => {
       /index.ts
       /news/news-index.ts
   */
-  if (normalizedPath === '/') {
+  if (normalizedPath === '/practice/') {
     const module = await import('./pages/index/index');
     new module.default();
   }
-  if (normalizedPath === '/cover_flow/') {
+  if (normalizedPath === '/practice/cover_flow/') {
     const module = await import('./pages/cover_flow/index');
     new module.default();
   }

@@ -5,7 +5,7 @@ import gsap from 'gsap';
 import Card from './card/card';
 
 export default class Depth {
-  private readonly URL_BG = '/assets/images/cover_flow/bg.png'; //- 背景画像のパス
+  private readonly URL_BG = '/practice/assets/images/cover_flow/bg.png'; //- 背景画像のパス
   private readonly ITEM_W = 256; //- 平面の横幅
   private readonly ITEM_H = 256; //- 平面の縦幅
   // private readonly MARGIN_X = 80; //- 平面のX座標の間隔

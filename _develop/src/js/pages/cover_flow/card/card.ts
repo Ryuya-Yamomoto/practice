@@ -8,7 +8,7 @@ export default class Card extends THREE.Object3D {
   constructor(index: number, ITEM_W: number, ITEM_H: number) {
     super();
 
-    const texture = new THREE.TextureLoader().load(`/assets/images/cover_flow/${index}.png`);
+    const texture = new THREE.TextureLoader().load(`/practice/assets/images/cover_flow/${index}.png`);
     texture.colorSpace = THREE.SRGBColorSpace;
 
     // アスペクト比1:1を保つために、最小値を使用

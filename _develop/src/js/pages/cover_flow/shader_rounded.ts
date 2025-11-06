@@ -6,7 +6,7 @@ import gsap from 'gsap';
 import Card from './card/card_shader_rounded';
 
 export default class ShaderRounded {
-  private readonly URL_BG = '/assets/images/cover_flow/bg.png'; //- 背景画像のパス
+  private readonly URL_BG = '/practice/assets/images/cover_flow/bg.png'; //- 背景画像のパス
   private readonly ITEM_W = 128; //- 平面の横幅
   private readonly ITEM_H = 128; //- 平面の縦幅
   private readonly MARGIN_X = 40; //- 平面のX座標の間隔
