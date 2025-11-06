@@ -77,7 +77,7 @@ export default class CardShaderRounded extends THREE.Object3D {
   constructor(index: number, ITEM_W: number, ITEM_H: number) {
     super();
 
-    const cardTexture = new THREE.TextureLoader().load(`/practice/assets/images/cover_flow/${index}.png`); //- テクスチャの読み込み
+    const cardTexture = new THREE.TextureLoader().load(`/engineer/yamamoto/practice/assets/images/cover_flow/${index}.png`); //- テクスチャの読み込み
     cardTexture.colorSpace = THREE.SRGBColorSpace;
 
     // シェーダーの準備

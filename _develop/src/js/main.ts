@@ -28,7 +28,7 @@ const getComponent = async () => {
     const module = await import('./pages/index/index');
     new module.default();
   }
-  if (normalizedPath === '/practice/cover_flow/') {
+  if (normalizedPath === '/engineer/yamamoto/practice/cover_flow/') {
     const module = await import('./pages/cover_flow/index');
     new module.default();
   }
