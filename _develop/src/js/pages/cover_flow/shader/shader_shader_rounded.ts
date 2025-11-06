@@ -55,10 +55,12 @@ export const fragmentShader = `
 
   void main()
   {
+    vec2 uv = (vUv - 0.5) * 0.9 + 0.5;
+
     // テクスチャのそれぞれの色成分を取得
-    float r = texture2D(materialTexture, vUv - vec2(offset * scrollDirection, 0.0)).r;
-    float g = texture2D(materialTexture, vUv - vec2(offset * scrollDirection * 0.5, 0.0)).g;
-    float b = texture2D(materialTexture, vUv).b;
+    float r = texture2D(materialTexture, uv - vec2(offset * scrollDirection, 0.0)).r;
+    float g = texture2D(materialTexture, uv - vec2(offset * scrollDirection * 0.5, 0.0)).g;
+    float b = texture2D(materialTexture, uv).b;
 
     // mixRatioの値に応じて黒色とmix
     // mixRatio=1.0で元の色、mixRatio=0.0で黒色
@@ -67,6 +69,5 @@ export const fragmentShader = `
     vec3 mixedColor = mix(blackColor, vec3(r, g, b), mixRatio);
 
     gl_FragColor = vec4(mixedColor, 1.0);
-
   }
 `;
