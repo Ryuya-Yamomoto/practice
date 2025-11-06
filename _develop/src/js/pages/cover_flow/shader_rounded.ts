@@ -1,18 +1,24 @@
 // @ts-ignore
-import * as THREE from 'three/webgpu';
+// import * as THREE from 'three/webgpu';
+import * as THREE from 'three';
 import gsap from 'gsap';
 
-import Card from './card/card';
+import Card from './card/card_shader_rounded';
 
-export default class Neutral {
+export default class ShaderRounded {
   private readonly URL_BG = '/assets/images/cover_flow/bg.png'; //- 背景画像のパス
-  private readonly ITEM_W = 256; //- 平面の横幅
-  private readonly ITEM_H = 256; //- 平面の縦幅
-  private readonly MARGIN_X = 80; //- 平面のX座標の間隔
+  private readonly ITEM_W = 128; //- 平面の横幅
+  private readonly ITEM_H = 128; //- 平面の縦幅
+  private readonly MARGIN_X = 40; //- 平面のX座標の間隔
   private readonly MAX_SLIDE = 44; //- スライドの個数
   private readonly ANIMATION_DURATION = 1.8; //- アニメーションの時速時間
   private readonly ROTATION_DURATION = 0.9; //- 回転アニメーションの持続時間
   private readonly ANIMATION_EASE = 'expo.out'; //- アニメーションのイージング
+
+  // private readonly RADIUS = 900; //- 円の半径
+  private readonly RADIUS = ((this.ITEM_W + this.MARGIN_X) * this.MAX_SLIDE) / (Math.PI * 2); //- 円の半径
+
+  private readonly ANGLE_STEP = (2 * Math.PI) / this.MAX_SLIDE; //- 各画像に適用する角度のステップ
 
   // グローバル変数
   private currentPage = 0; //- 現在のスライドID
@@ -21,7 +27,8 @@ export default class Neutral {
   // シーン、カメラ、レンダラー の初期化
   private scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(30);
-  private renderer = new THREE.WebGPURenderer({ antialias: true });
+  // private renderer = new THREE.WebGPURenderer({ antialias: true });
+  private renderer = new THREE.WebGLRenderer({ antialias: true });
 
   // UI要素の初期化
   private content = document.getElementById('canvasWrapper') as HTMLElement; //- コンテンツエリア
@@ -37,10 +44,10 @@ export default class Neutral {
   }
 
   // シーン、カメラ、レンダラー 初期化処理
-  initTHREE = async () => {
+  initTHREE = () => {
     this.scene.add(this.camera);
     this.renderer.setPixelRatio(devicePixelRatio);
-    this.renderer.init();
+    // await this.renderer.init();
 
     // canvasのスタイルを設定（ラッパー内で100%幅、アスペクト比16:9）
     this.renderer.domElement.style.width = '100%';
@@ -60,10 +67,10 @@ export default class Neutral {
   };
 
   // 初期化処理
-  init = async () => {
+  init = () => {
     // ライトの設定
-    const pointLight = new THREE.PointLight(0xffffff, 1000000, 1000);
-    pointLight.position.set(0, 0, 500);
+    const pointLight = new THREE.PointLight(0xffffff, 1000000, this.RADIUS);
+    pointLight.position.set(0, 0, this.RADIUS);
     this.scene.add(pointLight);
 
     // カードの生成
@@ -74,7 +81,7 @@ export default class Neutral {
     }
 
     // カメラの位置設定
-    this.camera.position.z = 1200;
+    this.camera.position.z = this.RADIUS;
     this.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     // 背景の生成
@@ -145,7 +152,7 @@ export default class Neutral {
     if (this.currentPage === id) return;
 
     this.cards.forEach((card, i) => {
-      const { x: targetX, z: targetZ, rotation: targetRot } = this.calculateCardPosition(i, id);
+      const { x: targetX, z: targetZ, rotation: targetRot, curlR, alpha, scale } = this.calculateCardPosition(i, id);
 
       gsap.to((card as THREE.Object3D).position, {
         x: targetX,
@@ -155,12 +162,34 @@ export default class Neutral {
         overwrite: true,
       });
 
+      // 角度計算
       gsap.to((card as THREE.Object3D).rotation, {
         y: targetRot,
         duration: this.ROTATION_DURATION,
         ease: this.ANIMATION_EASE,
         overwrite: true,
       });
+
+      // 大きさ調整
+      gsap.to((card as THREE.Object3D).scale, {
+        x: scale,
+        y: scale,
+        z: 1,
+        duration: this.ROTATION_DURATION * 1.4,
+        ease: this.ANIMATION_EASE,
+        overwrite: true,
+      });
+
+      // シェーダーのcurlRアニメーション
+      gsap.to(card, {
+        curlR: curlR,
+        duration: this.ROTATION_DURATION,
+        ease: this.ANIMATION_EASE,
+        overwrite: true,
+      });
+
+      // シェーダーのalpha
+      card.alpha = alpha;
     });
 
     this.currentPage = id;
@@ -173,21 +202,47 @@ export default class Neutral {
    * @returns {{x: number, z: number, rotation: number}} カードの位置と回転情報
    */
   calculateCardPosition = (index: number, targetId: number) => {
-    let targetX = this.MARGIN_X * (index - targetId);
-    let targetZ = 0;
-    let targetRot = 0;
+    // 現在のカードとターゲットカードのインデックス差を計算
+    let indexDiff = index - targetId;
 
-    if (index < targetId) {
-      targetX -= this.ITEM_W * 0.6;
-      targetZ = this.ITEM_W;
-      targetRot = +45 * (Math.PI / 180);
-    } else if (index > targetId) {
-      targetX += this.ITEM_W * 0.6;
-      targetZ = this.ITEM_W;
-      targetRot = -45 * (Math.PI / 180);
+    // 円形配置での最短距離を考慮
+    const distance = Math.min(Math.abs(indexDiff), this.MAX_SLIDE - Math.abs(indexDiff));
+
+    // Z座標を距離に基づいて計算
+    const depthStep = this.RADIUS / (this.MAX_SLIDE + this.MARGIN_X);
+    const targetZ = depthStep * distance;
+
+    // 角度を計算
+    const angle = this.ANGLE_STEP * indexDiff;
+
+    // X座標を円周上に配置
+    let targetX = this.RADIUS * Math.sin(angle);
+    if (targetX < 0 && Math.abs(targetX) > 0.001) {
+      targetX -= this.MARGIN_X;
+    } else if (targetX > 0 && Math.abs(targetX) > 0.001) {
+      targetX += this.MARGIN_X;
     }
 
-    return { x: targetX, z: targetZ, rotation: targetRot };
+    // 巻いてある角度
+    const curlR = this.RADIUS * -1;
+
+    // 回転
+    const targetRot = ((Math.PI * 2) / this.MAX_SLIDE) * indexDiff;
+
+    // mix 奥にある画像ほど黒のテクスチャの割合を高く
+    // targetZが0なら1.0、最大値なら0.7になるように計算
+    const maxZ = (this.RADIUS / (this.MAX_SLIDE + this.MARGIN_X)) * (this.MAX_SLIDE / 2);
+    let alpha = 1.0 - Math.min(targetZ / maxZ, 0.7);
+
+    // 整数の場合のみ .0 をつける
+    if (Number.isInteger(alpha)) {
+      alpha = parseFloat(alpha.toFixed(1));
+    }
+
+    // アクティブな画像は少し拡大
+    const scale = index === targetId ? 1.4 : 1.0;
+
+    return { x: targetX, z: targetZ, rotation: targetRot, curlR, alpha, scale };
   };
 
   /**
