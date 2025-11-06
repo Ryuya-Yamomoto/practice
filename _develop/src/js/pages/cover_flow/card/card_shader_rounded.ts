@@ -26,15 +26,51 @@ export default class CardShaderRounded extends THREE.Object3D {
     }
   }
 
-  // alphaの値を取得するgetter
-  get alpha(): number {
-    return (this.card?.material as THREE.ShaderMaterial)?.uniforms.alpha.value || 0;
+  // mixRatioの値を取得するgetter
+  get mixRatio(): number {
+    return (this.card?.material as THREE.ShaderMaterial)?.uniforms.mixRatio.value || 0;
   }
 
-  // alphaの値を設定するsetter
-  set alpha(value: number) {
+  // mixRatioの値を設定するsetter
+  set mixRatio(value: number) {
     if (this.card) {
-      (this.card.material as THREE.ShaderMaterial).uniforms.alpha.value = value;
+      (this.card.material as THREE.ShaderMaterial).uniforms.mixRatio.value = value;
+    }
+  }
+
+  // colorの値を取得するgetter
+  get color(): THREE.Color {
+    return (this.card?.material as THREE.ShaderMaterial)?.uniforms.color.value || new THREE.Color(0.0, 0.0, 0.0);
+  }
+
+  // colorの値を設定するsetter
+  set color(value: THREE.Color) {
+    if (this.card) {
+      (this.card.material as THREE.ShaderMaterial).uniforms.color.value = value;
+    }
+  }
+
+  // offsetの値を取得するgetter
+  get offset(): number {
+    return (this.card?.material as THREE.ShaderMaterial)?.uniforms.offset.value || 0;
+  }
+
+  // offsetの値を設定するsetter
+  set offset(value: number) {
+    if (this.card) {
+      (this.card.material as THREE.ShaderMaterial).uniforms.offset.value = value;
+    }
+  }
+
+  // scrollDirectionの値を取得するgetter
+  get scrollDirection(): number {
+    return (this.card?.material as THREE.ShaderMaterial)?.uniforms.scrollDirection.value || 0;
+  }
+
+  // scrollDirectionの値を設定するsetter
+  set scrollDirection(value: number) {
+    if (this.card) {
+      (this.card.material as THREE.ShaderMaterial).uniforms.scrollDirection.value = value;
     }
   }
 
@@ -50,8 +86,10 @@ export default class CardShaderRounded extends THREE.Object3D {
       fragmentShader: fragmentShader,
       uniforms: {
         curlR: { value: 0.0 }, //- シェーダに曲げの半径をuniform変数として渡す
-        // alpha: { value: 1.0 }, //- 透明度を指定
-        alpha: { value: 1.0 }, //- 透明度を指定
+        mixRatio: { value: 1.0 }, //- 黒色のテクスチャーとの混合比率
+        color: { value: new THREE.Color(0.0, 0.0, 0.0) }, //- スクロール中の色指定
+        offset: { value: 0.0 }, //- スクロールの進捗率における色をずらすためのオフセット値
+        scrollDirection: { value: 0.0 }, //- スクロール方向 0.0: 右方向 1.0: 左方向
         materialTexture: { value: cardTexture }, //- WebGPU版では type 指定不要
       },
     });

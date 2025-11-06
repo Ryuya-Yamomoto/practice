@@ -38,6 +38,9 @@ export default class ShaderRounded {
   private touchStartX = 0;
   private touchStartValue = 0;
 
+  // 初回ページ読み込み時判別
+  private isFirstLoaded = false;
+
   constructor() {
     this.initTHREE();
     this.init();
@@ -95,6 +98,8 @@ export default class ShaderRounded {
     this.moveSlide(this.MAX_SLIDE / 2);
     this.onResize();
     this.tick();
+
+    if (!this.isFirstLoaded) this.isFirstLoaded = true;
   };
 
   /**
@@ -152,7 +157,7 @@ export default class ShaderRounded {
     if (this.currentPage === id) return;
 
     this.cards.forEach((card, i) => {
-      const { x: targetX, z: targetZ, rotation: targetRot, curlR, alpha, scale } = this.calculateCardPosition(i, id);
+      const { x: targetX, z: targetZ, rotation: targetRot, curlR, mixRatio, scale } = this.calculateCardPosition(i, id);
 
       gsap.to((card as THREE.Object3D).position, {
         x: targetX,
@@ -160,6 +165,28 @@ export default class ShaderRounded {
         duration: this.ANIMATION_DURATION,
         ease: this.ANIMATION_EASE,
         overwrite: true,
+        onUpdate: function () {
+          // this.progress() でアニメーションの進行状況を取得 (0.0 ~ 1.0)
+          const progress = this.progress();
+
+          // progress 0→0.3→0.7→1 で offset 0→1→0→0 の山型カーブを作成
+          const peak = 0.05;
+          const zeroPoint = 0.55;
+          let offset;
+
+          if (progress <= peak) {
+            // 0から0.3まで：0→1に上昇
+            offset = progress / peak;
+          } else if (progress <= zeroPoint) {
+            // 0.3から0.7まで：1→0に下降
+            offset = 1 - (progress - peak) / (zeroPoint - peak);
+          } else {
+            // 0.7から1まで：0を維持
+            offset = 0;
+          }
+
+          card.offset = offset * 0.25;
+        },
       });
 
       // 角度計算
@@ -188,8 +215,15 @@ export default class ShaderRounded {
         overwrite: true,
       });
 
-      // シェーダーのalpha
-      card.alpha = alpha;
+      // シェーダーのmixRatio
+      card.mixRatio = mixRatio;
+
+      // シェーダーのscrollDirection
+      if (this.isFirstLoaded && this.currentPage > id) {
+        card.scrollDirection = -1.0; // 左方向
+      } else if (this.isFirstLoaded && this.currentPage < id) {
+        card.scrollDirection = 1.0; // 右方向
+      }
     });
 
     this.currentPage = id;
@@ -232,17 +266,17 @@ export default class ShaderRounded {
     // mix 奥にある画像ほど黒のテクスチャの割合を高く
     // targetZが0なら1.0、最大値なら0.7になるように計算
     const maxZ = (this.RADIUS / (this.MAX_SLIDE + this.MARGIN_X)) * (this.MAX_SLIDE / 2);
-    let alpha = 1.0 - Math.min(targetZ / maxZ, 0.7);
+    let mixRatio = 1.0 - Math.min(targetZ / maxZ, 0.7);
 
     // 整数の場合のみ .0 をつける
-    if (Number.isInteger(alpha)) {
-      alpha = parseFloat(alpha.toFixed(1));
+    if (Number.isInteger(mixRatio)) {
+      mixRatio = parseFloat(mixRatio.toFixed(1));
     }
 
     // アクティブな画像は少し拡大
     const scale = index === targetId ? 1.4 : 1.0;
 
-    return { x: targetX, z: targetZ, rotation: targetRot, curlR, alpha, scale };
+    return { x: targetX, z: targetZ, rotation: targetRot, curlR, mixRatio, scale };
   };
 
   /**
@@ -266,5 +300,10 @@ export default class ShaderRounded {
   tick = () => {
     this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this.tick);
+  };
+
+  // 開始と終了をなめらかに補間する関数 リープ関数
+  lerp = (start: number, end: number, multiplier: number) => {
+    return (1 - multiplier) * start + multiplier * end;
   };
 }
