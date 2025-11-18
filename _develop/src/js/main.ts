@@ -32,6 +32,14 @@ const getComponent = async () => {
     const module = await import('./pages/cover_flow/index');
     new module.default();
   }
+  if (normalizedPath === '/engineer/yamamoto/practice/d3/') {
+    const module = await import('./pages/d3/index');
+    new module.default();
+  }
+  if (normalizedPath === '/engineer/yamamoto/practice/gsap01/') {
+    const module = await import('./pages/gsap01/index');
+    new module.default();
+  }
 };
 
 export default class Main {

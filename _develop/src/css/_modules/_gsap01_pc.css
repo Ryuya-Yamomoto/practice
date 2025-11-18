@@ -1,0 +1,81 @@
+@media (--pc) {
+  .section-top {
+    height: 60vh;
+    display: grid;
+    place-items: center;
+    .scroll {
+      p {
+        font-size: rem(40);
+        font-weight: 700;
+      }
+    }
+  }
+
+  .pinContent {
+    display: block;
+    height: 100vh;
+    position: relative;
+    width: 100%;
+
+    .section-01 {
+      position: absolute;
+      inset: 0;
+      .section__inner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        .heading {
+          opacity: 0;
+          font-size: rem(28);
+          font-weight: 700;
+          span {
+            display: inline-block;
+            font-family: var(--font_Inter);
+            font-size: rem(80);
+            margin-right: 10px;
+            position: relative;
+          }
+        }
+        .txt {
+          opacity: 0;
+          font-size: rem(16);
+        }
+      }
+    }
+
+    .section-02 {
+      clip-path: circle(calc(var(--circle-size) * 1%) at calc(var(--circle-x) * 1px) calc(var(--circle-y) * 1px));
+      background: #000;
+      position: absolute;
+      inset: 0;
+      overflow: clip;
+      .section__inner {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        p {
+          color: #fff;
+          font-family: var(--font_Inter);
+          font-size: rem(80);
+          font-weight: 700;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          translate: -80% -50%;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+
+  .block-01 {
+    /* height: 200vh; */
+  }
+
+  .block-02 {
+    /* height: 1000vh; */
+  }
+}

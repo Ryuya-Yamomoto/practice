@@ -1,0 +1,19 @@
+extends ../utils/_base.pug
+
+block append stylesheet
+  //- assetPathで自動でサブディレクトリ対応の/assets/のパスが出るようにしてあります。
+  link(rel="stylesheet", href=assetPath + 'css/d3.css')
+
+block subTitle
+  - var pageTitle = 'd3'
+
+
+//- ルートだけは配列不要。base.pugの const url使うので。
+block ld
+  +breadcrumbList([])
+
+
+block main
+  .contentInner#content
+    +heading-page('d3', 'd3 を使って折れ線グラフを描画する')
+    .chart#chart

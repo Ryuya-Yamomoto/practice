@@ -1,0 +1,40 @@
+extends ../utils/_base.pug
+
+block append stylesheet
+  //- assetPathで自動でサブディレクトリ対応の/assets/のパスが出るようにしてあります。
+  link(rel="stylesheet", href=assetPath + 'css/gsap01.css')
+
+block subTitle
+  - var pageTitle = 'GSAP - 中心に集約するアニメーション'
+
+
+//- ルートだけは配列不要。base.pugの const url使うので。
+block ld
+  +breadcrumbList([])
+
+
+block main
+  .contentInner#content
+    +heading-page('GSAP', 'GSAP - 中心に集約するアニメーション')
+
+    section.section.section-top
+      .section__inner
+        .scroll
+          p 下にスクロール ↓
+
+  .scrollContainer#scrollContainer
+    .pinContent#pinContent
+
+      section.section.section-01#section-01
+        .section__inner
+          p.heading 
+            span#clipPathTarget G
+            | SAPを使ってアニメーションを作成していきます。
+          p.txt スクロールと連動してアニメーションが走ります。
+
+      section.section.section-02#section-02(style="--circle-size:0;--circle-x:0;--circle-y:0;")
+        .section__inner
+          p GSAP SCROLL ANIMATION 
+
+    .block-01#block-01
+    .block-02#block-02

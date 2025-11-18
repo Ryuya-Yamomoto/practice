@@ -3,20 +3,20 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>PRACTICE</title>
+    <title>d3 | PRACTICE</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="format-detection" content="telephone=no">
     <meta name="Description" content="">
     <meta property="og:type" content="website">
     <meta property="og:description" content="">
-    <meta property="og:title" content="PRACTICE">
+    <meta property="og:title" content="d3 | PRACTICE">
     <meta property="og:url" content="">
     <meta property="og:image" content="">
     <meta property="og:locale" content="ja_JP">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:description" content="">
     <link rel="stylesheet" href="/engineer/yamamoto/practice/assets/css/common.css?v=sha384-dz4NOTgHr5nE5UzfXzZeb/aOAXmWLbLuoFEoJM1SyuzJokYp8Naiac4GeIpwLCfI">
-    <link rel="stylesheet" href="/engineer/yamamoto/practice/assets/css/index.css?v=sha384-f5ttBCbTDp8FUdV4aGNYwpF90wNTPO5D93AWIsqG/w8Pq6MjxvIcW3JgF80PWQEm">
+    <link rel="stylesheet" href="/engineer/yamamoto/practice/assets/css/d3.css?v=sha384-asqbRGqyE9/hCjRNoXK7QYSTsBGC7rCnWWMdwTXveB8+QozAdKL9aC1P7rcpgYV+">
     <script type="application/ld+json">
       {
         "@context": "https://schema.org/",
@@ -46,21 +46,12 @@
         </div>
       </header>
       <main>
-        <div class="contentInner">
-          <ul class="thumbList">
-            <li class="thumbList__item"><a class="thumbList__item--anchor" href="/engineer/yamamoto/practice/cover_flow/">
-                <figure class="thumbList__item--img"><img src="/engineer/yamamoto/practice/assets/images/top/cover_flow.jpg?v=sha384-L0gCiLtnNLw1MKk6DASdswmpW8oDppVPTvBQDlo8LY6UT1ksIM8YFe2YXHu0PyEG" alt="カバーフローカルーセル Three.js" width="1280" height="512" loading="lazy" decoding="async">
-                </figure>
-                <p class="thumbList__item--desc">カバーフローカルーセル Three.js</p></a></li>
-            <li class="thumbList__item"><a class="thumbList__item--anchor" href="/engineer/yamamoto/practice/d3/">
-                <figure class="thumbList__item--img"><img src="/engineer/yamamoto/practice/assets/images/top/d3.svg?v=sha384-IqBAiN9owcljCl/ULcT6z0ZP1vOLBp9twVq8hCV9pLe4aQUsOwdhINlFF92bOFfn" alt="d3 を使って折れ線グラフを描画する" width="116" height="111" loading="lazy" decoding="async">
-                </figure>
-                <p class="thumbList__item--desc">d3 を使って折れ線グラフを描画する</p></a></li>
-            <li class="thumbList__item"><a class="thumbList__item--anchor" href="/engineer/yamamoto/practice/gsap01/">
-                <figure class="thumbList__item--img"><img src="/engineer/yamamoto/practice/assets/images/top/gsap01.jpg?v=sha384-SC8cPqwVPsBuF1iLGrXuUcGh+1Mgxa/mgc4FfD3IcHjrCefBwcf3omoVICkYQk0K" alt="gsap - 中心に集約するアニメーション" width="710" height="586" loading="lazy" decoding="async">
-                </figure>
-                <p class="thumbList__item--desc">gsap - 中心に集約するアニメーション</p></a></li>
-          </ul>
+        <div class="contentInner" id="content">
+          <hgroup class="heading-page">
+            <h2 class="title">d3</h2>
+            <p class="desc">d3 を使って折れ線グラフを描画する</p>
+          </hgroup>
+          <div class="chart" id="chart"></div>
         </div>
       </main>
       <footer class="footer" id="footer">
