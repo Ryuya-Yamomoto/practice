@@ -1,0 +1,105 @@
+extends ../utils/_base.pug
+
+block append stylesheet
+  //- assetPathで自動でサブディレクトリ対応の/assets/のパスが出るようにしてあります。
+  link(rel="stylesheet", href=assetPath + 'css/mock.css')
+
+block subTitle
+  - var pageTitle = 'mock'
+
+
+//- ルートだけは配列不要。base.pugの const url使うので。
+block ld
+  +breadcrumbList([])
+
+
+block main
+
+  include ./_data.pug
+
+  .contentInner#content
+
+    label.toggle
+      input(type="checkbox")
+
+    .inner
+
+      h2 日本全国の名産品
+
+      //- 北海道
+      section.area.hokkaido
+        - const hokkaido = data.find(item => item.prefecture === '北海道');
+        h3.area__label 北海道
+        div.item
+          h3.item__name= hokkaido.prefecture
+          div.item__famous
+            p 有名なもの
+            ul.item__famous--list
+              each famous in hokkaido.items
+                li= famous
+          p.item__desc= hokkaido.desc
+
+
+      //- 東北
+      section.area.tohoku
+        - const tohoku = data.filter(item => item.area === '東北');
+        h3.area__label 東北
+        .area__list
+          each prefecture in tohoku
+            div.item
+              h3.item__name= prefecture.prefecture
+              div.item__famous
+                p 有名なもの
+                ul.item__famous--list
+                  each famous in prefecture.items
+                    li= famous
+              p.item__desc= prefecture.desc
+
+
+      //- 関東
+      section.area.kanto
+        - const kanto = data.filter(item => item.area === '関東');
+        h3.area__label 関東
+        .area__list
+          each prefecture in kanto
+            div.item
+              h3.item__name= prefecture.prefecture
+              div.item__famous
+                p 有名なもの
+                ul.item__famous--list
+                  each famous in prefecture.items
+                    li= famous
+              p.item__desc= prefecture.desc
+
+
+      //- 関西
+      section.area.kansai
+        - const kansai = data.filter(item => item.area === '関西');
+        h3.area__label 関西
+        .area__list
+          each prefecture in kansai
+            div.item
+              h3.item__name= prefecture.prefecture
+              div.item__famous
+                p 有名なもの
+                ul.item__famous--list
+                  each famous in prefecture.items
+                    li= famous
+              p.item__desc= prefecture.desc
+
+
+      //- 九州
+      section.area.kyushu
+        - const kyushu = data.filter(item => item.area === '九州');
+        h3.area__label 九州
+        .area__list
+          each prefecture in kyushu
+            div.item
+              h3.item__name= prefecture.prefecture
+              div.item__famous
+                p 有名なもの
+                ul.item__famous--list
+                  each famous in prefecture.items
+                    li= famous
+              p.item__desc= prefecture.desc
+

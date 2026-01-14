@@ -40,6 +40,10 @@ const getComponent = async () => {
     const module = await import('./pages/gsap01/index');
     new module.default();
   }
+  if (normalizedPath === '/engineer/yamamoto/practice/mock/') {
+    const module = await import('./pages/mock/index');
+    new module.default();
+  }
 };
 
 export default class Main {
