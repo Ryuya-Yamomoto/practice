@@ -15,14 +15,14 @@ export default class ShaderRounded {
   private readonly ROTATION_DURATION = 0.9; //- 回転アニメーションの持続時間
   private readonly ANIMATION_EASE = 'expo.out'; //- アニメーションのイージング
 
+  // private readonly RADIUS = 900; //- 円の半径
   private readonly RADIUS = ((this.ITEM_W + this.MARGIN_X) * this.MAX_SLIDE) / (Math.PI * 2); //- 円の半径
+
   private readonly ANGLE_STEP = (2 * Math.PI) / this.MAX_SLIDE; //- 各画像に適用する角度のステップ
 
   // グローバル変数
-  // private currentPage = 0; //- 現在のスライドID
+  private currentPage = 0; //- 現在のスライドID
   private cards: Card[] = []; //- 平面を格納する配列
-  private rotationOffset = 0; //- 回転のオフセット値
-  private scrollDirection = 0; //- スクロール方向 1: 右 -1: 左
 
   // シーン、カメラ、レンダラー の初期化
   private scene = new THREE.Scene();
@@ -95,8 +95,7 @@ export default class ShaderRounded {
     this.scene.add(meshBg);
 
     // 初期表示
-    // this.moveSlide(this.MAX_SLIDE / 2);
-    this.moveSlide();
+    this.moveSlide(this.MAX_SLIDE / 2);
     this.onResize();
     this.tick();
 
@@ -108,11 +107,7 @@ export default class ShaderRounded {
    * @param {WheelEvent} event - ホイールイベント
    */
   onWheel = (event: WheelEvent) => {
-    // this.slider.valueAsNumber += event.deltaY * 0.0005;
-    // this.onSliderChange();
-    this.scrollDirection = event.deltaY > 0 ? 1 : event.deltaY < 0 ? -1 : 0;
-    const scrollSensitivity = 0.005; // スクロール感度調整
-    this.rotationOffset += event.deltaY * scrollSensitivity;
+    this.slider.valueAsNumber += event.deltaY * 0.0005;
     this.onSliderChange();
     event.preventDefault();
   };
@@ -150,22 +145,23 @@ export default class ShaderRounded {
    * スライダー変更イベントハンドラー
    */
   onSliderChange = () => {
-    // const nextId = Math.round(this.slider.valueAsNumber * (this.MAX_SLIDE - 1));
-    // this.moveSlide(nextId);
-    this.moveSlide();
+    const nextId = Math.round(this.slider.valueAsNumber * (this.MAX_SLIDE - 1));
+    this.moveSlide(nextId);
   };
 
   /**
    * スライドを移動
    * @param {number} id - 移動先のスライドID
    */
-  moveSlide = () => {
+  moveSlide = (id: number) => {
+    if (this.currentPage === id) return;
+
     this.cards.forEach((card, i) => {
-      const { x: targetX, z: targetZ, rotation: targetRot, curlR, mixRatio, scale } = this.calculateCardPosition(i);
+      const { x: targetX, z: targetZ, rotation: targetRot, curlR, mixRatio, scale } = this.calculateCardPosition(i, id);
 
       gsap.to((card as THREE.Object3D).position, {
         x: targetX,
-        z: targetZ,
+        z: -1 * targetZ,
         duration: this.ANIMATION_DURATION,
         ease: this.ANIMATION_EASE,
         overwrite: true,
@@ -223,14 +219,14 @@ export default class ShaderRounded {
       card.mixRatio = mixRatio;
 
       // シェーダーのscrollDirection
-      if (this.scrollDirection < 0) {
+      if (this.isFirstLoaded && this.currentPage > id) {
         card.scrollDirection = -1.0; // 左方向
-      } else if (this.scrollDirection > 0) {
+      } else if (this.isFirstLoaded && this.currentPage < id) {
         card.scrollDirection = 1.0; // 右方向
       }
     });
 
-    // this.currentPage = id;
+    this.currentPage = id;
   };
 
   /**
@@ -239,39 +235,46 @@ export default class ShaderRounded {
    * @param {number} targetId - 目標のスライドID
    * @returns {{x: number, z: number, rotation: number}} カードの位置と回転情報
    */
-  calculateCardPosition = (index: number) => {
-    // 各カードの角度を計算（基本角度 + 回転オフセット）
-    const cardAngle = this.ANGLE_STEP * index + this.rotationOffset;
+  calculateCardPosition = (index: number, targetId: number) => {
+    // 現在のカードとターゲットカードのインデックス差を計算
+    let indexDiff = index - targetId;
 
-    // X座標を円周上に配置（sinで左右位置を決定）
-    const targetX = this.RADIUS * Math.sin(cardAngle);
+    // 円形配置での最短距離を考慮
+    const distance = Math.min(Math.abs(indexDiff), this.MAX_SLIDE - Math.abs(indexDiff));
 
-    // Z座標は円周上の位置のcos値で計算
-    // cos(0) = 1（手前）、cos(π) = -1（奥）
-    // const targetZ = this.RADIUS * (1 - Math.cos(cardAngle)) * -1;
-    const targetZ = this.RADIUS * (1 - Math.cos(cardAngle));
+    // Z座標を距離に基づいて計算
+    const depthStep = this.RADIUS / (this.MAX_SLIDE + this.MARGIN_X);
+    const targetZ = depthStep * distance;
+
+    // 角度を計算
+    const angle = this.ANGLE_STEP * indexDiff;
+
+    // X座標を円周上に配置
+    let targetX = this.RADIUS * Math.sin(angle);
+    if (targetX < 0 && Math.abs(targetX) > 0.001) {
+      targetX -= this.MARGIN_X;
+    } else if (targetX > 0 && Math.abs(targetX) > 0.001) {
+      targetX += this.MARGIN_X;
+    }
 
     // 巻いてある角度
     const curlR = this.RADIUS * -1;
 
-    // 回転：各カードが円弧の接線方向を向くように設定
-    // 円弧上の点での接線の角度 = その点の角度 + 90°
-    const targetRot = cardAngle + Math.PI / 2;
+    // 回転
+    const targetRot = ((Math.PI * 2) / this.MAX_SLIDE) * indexDiff;
 
     // mix 奥にある画像ほど黒のテクスチャの割合を高く
     // targetZが0なら1.0、最大値なら0.7になるように計算
-    const maxZ = this.RADIUS * 2; // 最大深度
+    const maxZ = (this.RADIUS / (this.MAX_SLIDE + this.MARGIN_X)) * (this.MAX_SLIDE / 2);
     let mixRatio = 1.0 - Math.min(targetZ / maxZ, 0.7);
 
     // 整数の場合のみ .0 をつける
     if (Number.isInteger(mixRatio)) {
       mixRatio = parseFloat(mixRatio.toFixed(1));
     }
-    mixRatio = 1.0;
 
     // アクティブな画像は少し拡大
-    // const scale = index === targetId ? 1.4 : 1.0;
-    const scale = 1.0;
+    const scale = index === targetId ? 1.4 : 1.0;
 
     return { x: targetX, z: targetZ, rotation: targetRot, curlR, mixRatio, scale };
   };
