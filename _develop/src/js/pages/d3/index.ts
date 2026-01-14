@@ -7,6 +7,8 @@ type DataItem = {
 };
 
 export default class D3 {
+  private readonly URL_DATA = '/engineer/yamamoto/practice/assets/json/d3/data.json';
+
   private contents = d3.select('#chart');
   private svg = this.contents.append('svg');
 
@@ -25,6 +27,7 @@ export default class D3 {
   private linePath: d3.Selection<SVGPathElement, unknown, null, undefined> | null = null;
   private brushSvg: d3.Selection<SVGSVGElement, unknown, null, undefined> | null = null;
   private brush: d3.BrushBehavior<unknown> | null = null;
+  private tooltip: d3.Selection<HTMLDivElement, unknown, HTMLElement, any> | null = null;
 
   constructor() {
     this.fetchData();
@@ -32,21 +35,28 @@ export default class D3 {
 
   // 配列データのfetch
   fetchData = async () => {
-    const data = await d3.json('/engineer/yamamoto/practice/assets/json/d3/data.json');
-    this.data = data.data as DataItem[];
+    try {
+      const data = await d3.json(this.URL_DATA);
+      this.data = data.data as DataItem[];
 
-    // 日付をパースし、月の1日に変換
-    this.data = this.data.map((d) => {
-      const parsedDate = this.timeparser(d.date);
-      // 月の1日に設定
-      const firstDayOfMonth = new Date(parsedDate.getFullYear(), parsedDate.getMonth(), 1);
-      return { date: firstDayOfMonth, value: d.value };
-    });
+      // 日付をパースし、月の1日に変換
+      this.data = this.data.map((d) => {
+        const parsedDate = this.timeparser(d.date);
+        // 月の1日に設定
+        const firstDayOfMonth = new Date(parsedDate.getFullYear(), parsedDate.getMonth(), 1);
+        return { date: firstDayOfMonth, value: d.value };
+      });
 
-    // 初期表示のx軸の目盛りの数を指定
-    this.xTicks = Util.IS_SP ? (this.data.length + 1) / 4 : this.data.length;
+      // 初期表示のx軸の目盛りの数を指定
+      this.xTicks = Util.IS_SP ? (this.data.length + 1) / 4 : this.data.length;
 
-    this.init();
+      this.init();
+
+      // resize イベントを検知したら、再描画
+      window.addEventListener('resize', this.init);
+    } catch (error) {
+      console.error('データの取得に失敗しました', error);
+    }
   };
 
   // 初期処理
@@ -70,6 +80,7 @@ export default class D3 {
       ])
       .range([this.padding, this.width]); //- svg内でのX軸の位置の開始位置と終了位置を指定し、X軸の幅を設定する
 
+    // y軸をvalueのスケールに設定
     this.yScale = d3
       .scaleLinear()
       .domain([
@@ -94,6 +105,9 @@ export default class D3 {
 
     // レンジスライダーを追加
     this.createRangeSlider();
+
+    // ツールチップを作成
+    this.createTooltip();
   };
 
   // グラフ描画
@@ -191,12 +205,18 @@ export default class D3 {
     // ミニマップ用のスケール
     const miniXScale = d3
       .scaleTime()
-      .domain([d3.min(this.data, (d: DataItem) => d.date)!, d3.max(this.data, (d: DataItem) => d.date)!])
+      .domain([
+        d3.min(this.data, (d: DataItem) => d.date)!, //- 最小値
+        d3.max(this.data, (d: DataItem) => d.date)!, //- 最大値
+      ])
       .range([0, brushWidth]);
 
     const miniYScale = d3
       .scaleLinear()
-      .domain([0, d3.max(this.data, (d: DataItem) => d.value)!])
+      .domain([
+        0, //- 最小値
+        d3.max(this.data, (d: DataItem) => d.value)!, //- 最大値
+      ])
       .range([brushHeight, 0]);
 
     // ミニマップにグラフを描画
@@ -231,6 +251,132 @@ export default class D3 {
 
     // ブラシを適用（初期選択範囲は全体）
     brushG.append('g').attr('class', 'brush').call(this.brush).call(this.brush.move, [0, brushWidth]);
+  };
+
+  // ツールチップ 縦の羅線を作成
+  createTooltip = () => {
+    // ツールチップ用のdiv要素を作成
+    this.tooltip = d3.select('body').append('div').attr('class', 'chart-tooltip').style('opacity', 0);
+
+    if (!this.xScale) return;
+
+    const xScale = this.xScale;
+
+    // ホバー時の縦線を作成
+    const hoverLine = this.svg
+      .append('line')
+      .attr('class', 'hover-line')
+      .attr('y1', this.padding)
+      .attr('y2', this.height)
+      .attr('stroke', '#999')
+      .attr('stroke-width', 1)
+      .attr('stroke-dasharray', '4,4')
+      .style('opacity', 0)
+      .style('pointer-events', 'none');
+
+    // ホバーエリアを作成（透明な矩形）
+    const hoverArea = this.svg
+      .append('rect')
+      .attr('class', 'hover-area')
+      .attr('x', this.padding)
+      .attr('y', this.padding)
+      .attr('width', this.width - this.padding)
+      .attr('height', this.height - this.padding)
+      .attr('fill', 'none')
+      .attr('pointer-events', 'all');
+
+    // ツールチップ更新関数
+    const updateTooltip = (event: MouseEvent) => {
+      // マウスのX座標を取得（SVG全体での座標）
+      const [mouseX] = d3.pointer(event, this.svg.node());
+
+      // データが存在しない場合は何もしない
+      if (!this.data || this.data.length === 0) {
+        hoverLine.style('opacity', 0);
+        this.tooltip!.style('opacity', 0);
+        return;
+      }
+
+      // 表示範囲内のデータのみを対象にする
+      const [domainMin, domainMax] = xScale.domain();
+      const visibleData = this.data.filter((d) => d.date >= domainMin && d.date <= domainMax);
+
+      if (visibleData.length === 0) {
+        hoverLine.style('opacity', 0);
+        this.tooltip!.style('opacity', 0);
+        return;
+      }
+
+      // カーソル位置から最も近いデータポイントを見つける（ピクセル距離で比較）
+      let closestData: DataItem | null = null;
+      let minDistance = Infinity;
+
+      visibleData.forEach((d: DataItem) => {
+        const dataX = xScale(d.date);
+        const distance = Math.abs(mouseX - dataX);
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestData = d;
+        }
+      });
+
+      // データが見つからない場合は非表示（型ガード）
+      if (!closestData) {
+        hoverLine.style('opacity', 0);
+        this.tooltip!.style('opacity', 0);
+        return;
+      }
+
+      // 型を確定（closestDataはDataItem型）
+      const data: DataItem = closestData;
+
+      // 縦線の位置を更新
+      const lineX = xScale(data.date);
+      hoverLine.attr('x1', lineX).attr('x2', lineX).style('opacity', 1);
+
+      // ツールチップの内容を更新
+      const formattedDate = d3.timeFormat('%Y年%m月')(data.date);
+      this.tooltip!.html(
+        `
+        <div class="chart-tooltip__date">${formattedDate}</div>
+        <div class="chart-tooltip__value">値: ${data.value}</div>
+      `,
+      )
+        .style('left', `${event.pageX + 10}px`)
+        .style('top', `${event.pageY - 28}px`)
+        .style('position', 'absolute')
+        .style('opacity', 1);
+    };
+
+    // マウス移動イベント（requestAnimationFrameで最適化）
+    let rafId: number | null = null;
+    let lastEvent: MouseEvent | null = null;
+
+    hoverArea.on('mousemove', (event) => {
+      lastEvent = event; // 最新のイベントを保存
+
+      if (rafId !== null) {
+        return; // 既に予約済みなら何もしない
+      }
+
+      rafId = requestAnimationFrame(() => {
+        if (lastEvent) {
+          updateTooltip(lastEvent); // 最新のイベントで更新
+        }
+        rafId = null;
+      });
+    });
+
+    // マウスアウトイベント
+    hoverArea.on('mouseout', () => {
+      lastEvent = null;
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      this.tooltip!.style('opacity', 0);
+      hoverLine.style('opacity', 0);
+    });
   };
 
   // 表示範囲を更新（削除）

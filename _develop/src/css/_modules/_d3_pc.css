@@ -7,4 +7,22 @@
       width: 100%;
     }
   }
+  .chart-tooltip {
+    background: #fff;
+    border: 2px solid #000;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 8px 16px;
+    width: fit-content;
+    &__date {
+      font-size: rem(14);
+      font-weight: 700;
+    }
+    &__value {
+      font-size: rem(12);
+      margin-top: 4px;
+    }
+  }
 }
